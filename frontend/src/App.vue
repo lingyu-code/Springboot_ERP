@@ -1,16 +1,34 @@
 <template>
   <div id="app">
     <header class="app-header">
-      <h1>MPS 系统 - 主生产计划管理系统</h1>
-      <p>输入MPS记录，生成采购计划和生产计划</p>
+      <h1>ERP 系统</h1>
+      <nav class="app-nav">
+        <button :class="['nav-button', { active: currentPage === 'mps' }]" @click="currentPage = 'mps'">
+          主生产计划
+        </button>
+        <button :class="['nav-button', { active: currentPage === 'formula' }]" @click="currentPage = 'formula'">
+          公式查询
+        </button>
+      </nav>
     </header>
 
     <main class="app-main">
-      <MpsInputForm @plans-generated="handlePlansGenerated" />
+      <div v-if="currentPage === 'mps'" class="page-content">
+        <div class="page-header">
+          <h2>MPS 系统 - 主生产计划管理系统</h2>
+          <p>输入MPS记录，生成采购计划和生产计划</p>
+        </div>
 
-      <div v-if="plans" class="plans-container">
-        <ProcurementPlanDisplay :plan="plans.procurementPlan" />
-        <ProductionPlanDisplay :plan="plans.productionPlan" />
+        <MpsInputForm @plans-generated="handlePlansGenerated" />
+
+        <div v-if="plans" class="plans-container">
+          <ProcurementPlanDisplay :plan="plans.procurementPlan" />
+          <ProductionPlanDisplay :plan="plans.productionPlan" />
+        </div>
+      </div>
+
+      <div v-if="currentPage === 'formula'" class="page-content">
+        <FormulaQuery />
       </div>
     </main>
   </div>
@@ -21,8 +39,10 @@ import { ref } from 'vue'
 import MpsInputForm from './components/MpsInputForm.vue'
 import ProcurementPlanDisplay from './components/ProcurementPlanDisplay.vue'
 import ProductionPlanDisplay from './components/ProductionPlanDisplay.vue'
+import FormulaQuery from './components/FormulaQuery.vue'
 
 const plans = ref(null)
+const currentPage = ref('mps')
 
 const handlePlansGenerated = (generatedPlans) => {
   plans.value = generatedPlans
@@ -56,13 +76,37 @@ body {
 
 .app-header h1 {
   font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   font-weight: 600;
 }
 
-.app-header p {
-  font-size: 1.1rem;
-  opacity: 0.9;
+.app-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.nav-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.nav-button.active {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
 }
 
 .app-main {
